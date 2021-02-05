@@ -1,0 +1,183 @@
+---
+title: "Football Salary Exploration"
+output: html_notebook
+author: Kelly Rivera
+---
+
+
+
+# probability distribution
+
+Data set: American Football: Analysis on the Salary of 5.5k Pro-Players
+
+## Install & load libraries
+```{r}
+# Install tidyverse
+#install.packages("tidyverse")
+
+# load libraries
+library(tidyverse)
+library(ggplot2)
+```
+
+
+## Import Dataset CSV
+```{r}
+# Importing the csv file
+football <- read_csv("football_salaries.csv") %>% filter(position %in% c("defensive-back", "offensive-line", "tight-end", "quarterback",
+                                                                         "wide-receiver"),
+                                                         age > 0, 
+                                                         age <= 50)
+
+football
+```
+
+```{r}
+football$PlayerAge <- as.factor(football$age)
+football
+```
+
+
+
+## Data Exploration 
+```{r}
+ggplot(data = football, mapping = aes(x = position, y = total_value)) + 
+  geom_point() 
+```
+
+```{r}
+which.max(football$total_value)
+```
+
+```{r}
+ggplot(data = football, mapping = aes(x = total_value)) + 
+  geom_histogram() +
+  labs(title = "Salary by Player Age")
+```
+## Histogram 1
+
+1. What age is the most dominant of Pro-Football Players
+ 
+```{r}
+ggplot(data = football, mapping = aes(x = age, fill = PlayerAge)) + 
+  geom_histogram(show.legend = FALSE, color = "black") +
+  geom_vline(aes(xintercept = mean(age)), color = "red4", linetype = "dashed") +
+  labs(title = "Age Distribution of Pro-Player",
+       subtitle = "Source: Kaggle",
+       x = "Age",
+       y= "Frequency")
+```
+
+```{r}
+cat("Distribution: Unimodal", '\n')
+cat("Range: ", max(football$age) - min(football$age),'\n')
+cat("Mean: ", mean(football$age),'\n')
+cat("Median: ", median(football$age),'\n')
+cat("Standard Deviation: ", sd(football$age),'\n')
+
+```
+
+This graph is skewed right since the data is not symmetrical and the majority of data is toward the left.  This visualization answers my initial question that the age of 23-24 is the most common age among pro-football players. 
+
+
+## Histogram 2
+
+2. Of professional football players, what age group is generates the most money?
+
+```{r}
+ggplot(data = football, mapping = aes(x = age, y = total_value/100000000, fill = PlayerAge)) + 
+  geom_col(show.legend = FALSE) +
+  geom_vline(aes(xintercept = mean(age)), color = "red4", linetype = "dashed") +
+  labs(title = "Pro-Player Salaries by Age",
+       subtitle = "Source: Kaggle",
+       x = "Age",
+       y= "Total Contract Salary (billions $)")
+```
+
+```{r}
+cat("Distribution: Unimodal", '\n')
+cat("Range: ", max(football$total_value) - min(football$total_value),'\n')
+cat("Mean: ", mean(football$total_value),'\n')
+cat("Median: ", median(football$total_value),'\n')
+cat("Standard Deviation: ", sd(football$total_value),'\n')
+```
+
+This graph is unimodal since the data is symmetrical and there is one peak.  This visualization answers my question by showing the age of 26 to earn the greatest total salary in comparison to other pro-football player age groups. 
+
+
+```{r}
+# Taking the mean age for football player 
+youngsters <- filter(football, football$age >= 25, football$age <=27)
+```
+
+```{r}
+ggplot(data = youngsters, mapping = aes(x = age, y = total_value/100000000, fill = PlayerAge)) + 
+  geom_col(show.legend = FALSE) +
+  labs(title = "Pro-Player Salaries by Age",
+       subtitle = "Source: Kaggle",
+       x = "Age",
+       y= "Total Contract Salary (billions $)")
+```
+
+```{r}
+cat("Distribution: Unimodal", '\n')
+cat("Range: ", max(youngsters$total_value) - min(youngsters$total_value),'\n')
+cat("Mean: ", mean(youngsters$total_value),'\n')
+cat("Median: ", median(youngsters$total_value),'\n')
+cat("Standard Deviation: ", sd(youngsters$total_value),'\n')
+
+```
+
+
+## Histogram 3
+
+3. What annual amount is most common for Pro-Football Players to earn?
+
+```{r}
+ggplot(data = football, mapping = aes(x = avg_year/1000000)) + 
+  geom_histogram(color = "black", fill = "skyblue", show.legend = FALSE) +
+  geom_vline(aes(xintercept = mean(avg_year/1000000)), color = "red4", linetype = "dashed") +
+  labs(title = "Contract Salary Distribution of Pro-Players",
+       subtitle = "Source: Kaggle",
+       x = "Contract Salary (millions $)",
+       y= "Frequency")
+```
+
+
+```{r}
+cat("Distribution: Skewed Right", '\n')
+cat("Range: $", max(football$avg_year) - min(football$avg_year),'\n')
+cat("Mean: $", mean(football$avg_year),'\n')
+cat("Median: $", median(football$avg_year),'\n')
+cat("Standard Deviation: $", sd(football$avg_year),'\n')
+
+```
+
+This graph is skewed right since the data is not symmetrical and a great majority of the data is toward the left side of the graph.  This visualization answers my third question by showing that contract salaries between 1-2 million dollars are the most frequent among pro-football players. 
+
+
+## Histogram 4
+
+4. What salary is most commonly guaranteed for a Pro-Football Player contract? 
+
+```{r}
+ggplot(data = football, mapping = aes(x = total_guaranteed/1000000)) + 
+  geom_histogram(color = "black", fill = "seagreen2", show.legend = FALSE) +
+  geom_vline(aes(xintercept = mean(total_guaranteed/1000000)), color = "navy", linetype = "longdash") +
+  labs(title = "Guaranteed Salary Distribution of Pro-Players",
+       subtitle = "Source: Kaggle",
+       x = "Guaranteed Salary (millions $)",
+       y= "Frequency")
+```
+
+
+```{r}
+cat("Distribution: Skewed Right", '\n')
+cat("Range: $", max(football$total_guaranteed) - min(football$total_guaranteed),'\n')
+cat("Mean: $", mean(football$total_guaranteed),'\n')
+cat("Median: $", median(football$total_guaranteed),'\n')
+cat("Standard Deviation: $", sd(football$total_guaranteed),'\n')
+
+```
+
+This graph is skewed right since the data is not symmetrical and a vast majority of data is on the left side of the histogram.  This visualization answers my last question by showing that contracts guaranteeing between 0-3.5 million dollars are the most frequent among pro-football players.
